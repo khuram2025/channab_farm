@@ -38,6 +38,7 @@ class AnimalCard extends StatelessWidget {
                       child: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
                     Text('Age: $age'),
+                    Text('Milking: Since last 10 days'),
                     SingleChildScrollView( // Enables horizontal scrolling for the row
                       scrollDirection: Axis.horizontal,
                       child: Row(
