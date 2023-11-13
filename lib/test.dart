@@ -1,103 +1,74 @@
 import 'package:flutter/material.dart';
+import '../widgets/animalCard.dart';
+import 'filter_icon_widget.dart'; // Import the FilterIconWidget
 
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
-class AnimalUploadEditPage extends StatefulWidget {
-  @override
-  _AnimalUploadEditPageState createState() => _AnimalUploadEditPageState();
-}
-
-class _AnimalUploadEditPageState extends State<AnimalUploadEditPage> {
-  DateTime selectedDate = DateTime.now();
-  String? selectedCategory;
-  String? selectedSex;
-  String? selectedStatus;
-  String? selectedType;
-  XFile? imageFile;
-  TextEditingController dateCtl = TextEditingController();
-
-  final _categories = ['Category 1', 'Category 2']; // Example categories
-  final _sexes = ['Male', 'Female'];
-  final _statuses = ['Status 1', 'Status 2']; // Example statuses
-  final _types = ['Type 1', 'Type 2']; // Example types
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        dateCtl.text = "${picked.toLocal()}".split(' ')[0];
-      });
-    }
-  }
-
-  Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        imageFile = pickedFile;
-      });
-    }
-  }
-
+class AnimalListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Animal Upload/Edit'),
+        title: Text('Animals List'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            // ... Rest of your code ...
-
-            // Date of birth
-            GestureDetector(
-              onTap: () => _selectDate(context),
-              child: AbsorbPointer(
-                child: TextFormField(
-                  controller: dateCtl,
-                  decoration: InputDecoration(
-                    labelText: "Date of Birth",
-                    hintText: "Add Date of Birth",
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 7.0),
+            child: Row(
+              children: [
+                FilterIconWidget(), // Filter icon to the left
+                SizedBox(width: 8), // Space between filter icon and scrolling list
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(10, (index) => _buildTypeBox('Type ${index + 1}', index)),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-
-            // ... Rest of your code ...
-
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Add/Save animal logic
-                },
-                child: Text('Add Animal'),
-                style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 50)),
-              ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 10, // Number of items in the list
+              itemBuilder: (context, index) {
+                return AnimalCard(
+                  imageUrl: 'https://via.placeholder.com/150',
+                  title: 'Animal ${index + 1}',
+                  age: '${index + 1} years',
+                );
+              },
             ),
-            // Add more form fields if necessary
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  Widget _buildTypeBox(String text, int index) {
+    return Container(
+      width: 77,
+      height: 26,
+      margin: EdgeInsets.only(right: 8), // Small gap between the boxes
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        border: Border.all(color: _getColorForIndex(index)),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: _getColorForIndex(index),
         ),
       ),
     );
   }
 
-  @override
-  void dispose() {
-    dateCtl.dispose();
-    super.dispose();
+  Color _getColorForIndex(int index) {
+    // Define a list of colors or generate colors dynamically
+    List<Color> colors = [Colors.red, Colors.green, Colors.blue, Colors.orange, Colors.purple, Colors.pink, Colors.yellow, Colors.teal, Colors.cyan, Colors.amber];
+    return colors[index % colors.length];
   }
 }

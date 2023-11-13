@@ -34,20 +34,21 @@ class AnimalCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.only(top: 10), // Top margin for the title
-                      child: Text(
-                        title,
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+                      padding: EdgeInsets.only(top: 10),
+                      child: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
                     Text('Age: $age'),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        _buildInfoBox('Box 1'),
-                        _buildInfoBox('Box 2'),
-                        _buildInfoBox('Box 3'),
-                      ],
+                    SingleChildScrollView( // Enables horizontal scrolling for the row
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: <Widget>[
+                          _buildInfoBox('Box 1'),
+                          SizedBox(width: 5), // Spacing between boxes
+                          _buildInfoBox('Box 2'),
+                          SizedBox(width: 5),
+                          _buildInfoBox('Box 3'),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -61,7 +62,7 @@ class AnimalCard extends StatelessWidget {
 
   Widget _buildInfoBox(String text) {
     return Container(
-      width: 77,
+      width: 70,
       height: 26,
       alignment: Alignment.center,
       decoration: BoxDecoration(

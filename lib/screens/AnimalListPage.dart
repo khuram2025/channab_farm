@@ -12,7 +12,25 @@ class AnimalListPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // ... Your existing code for filter and type boxes ...
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 7.0),
+            child: Row(
+              children: [
+                 // Filter icon to the left
+                 // Space between filter icon and scrolling list
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(10, (index) => _buildTypeBox('Type ${index + 1}', index)),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                FilterIconWidget(),
+              ],
+            ),
+          ),
 
           Expanded(
             child: ListView.builder(
