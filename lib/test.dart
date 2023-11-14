@@ -2,38 +2,63 @@ import 'package:flutter/material.dart';
 import '../widgets/animalCard.dart';
 import 'filter_icon_widget.dart'; // Import the FilterIconWidget
 
-class _LoginPageState extends State<LoginPage> {
-  // ... other fields and methods ...
-
-  void _handleLogin() async {
-    try {
-      final response = await _apiService.login(
-        _phoneController.text,
-        _passwordController.text,
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        _apiService.authToken = data['token']; // Set token in ApiService
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AnimalListPage(),
-            settings: RouteSettings(arguments: data['token']),
-          ),
-        );
-      } else {
-        print('Login failed: ${response.body}');
-      }
-    } catch (e) {
-      print('Login failed: $e');
-    }
-  }
+class AnimalCard extends StatelessWidget {
+  // ... existing properties ...
 
   @override
-  void dispose() {
-    _phoneController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    String fullImageUrl = imageUrl != null ? 'http://example.com$imageUrl' : 'assets/fallback_image.png';
+
+    return Container(
+      width: 400,
+      height: 150,
+      child: Card(
+        child: Row(
+          children: [
+            Image.network(
+              fullImageUrl,
+              width: 150,
+              height: 150,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/fallback_image.png', // fallback image
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
+            Expanded(  // Wrap with Expanded to prevent overflow
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text('Age: $age'),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: <Widget>[
+                          _buildInfoBox(sex),
+                          SizedBox(width: 5),
+                          _buildInfoBox(status),
+                          SizedBox(width: 5),
+                          _buildInfoBox(animalType),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
+
+// ... _buildInfoBox method ...
 }

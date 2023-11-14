@@ -86,7 +86,7 @@ class AnimalListPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       var animal = snapshot.data![index];
                       return AnimalCard(
-                        imageUrl: 'https://via.placeholder.com/150',
+                        imageUrl: animal['image_url'],
                         title: animal['tag'],
                         age: calculateAge(animal['dob']),
                         sex: animal['sex'],

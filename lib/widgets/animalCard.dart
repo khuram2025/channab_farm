@@ -20,26 +20,29 @@ class AnimalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String fullImageUrl = imageUrl != null ? 'http://example.com$imageUrl' : 'assets/fallback_image.png';
+
     return Container(
       width: 400,
       height: 150,
       child: Card(
         child: Row(
           children: [
-            (imageUrl != null && imageUrl!.isNotEmpty)
-                ? Image.network(
-              imageUrl!,
+            Image.network(
+              fullImageUrl,
               width: 150,
               height: 150,
               fit: BoxFit.cover,
-            )
-                : Image.asset(
-              'assets/fallback_image.png', // Path to your fallback image asset
-              width: 150,
-              height: 150,
-              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/fallback_image.png', // fallback image
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
-            Expanded(
+            Expanded(  // Wrap with Expanded to prevent overflow
               child: Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Column(
@@ -52,11 +55,11 @@ class AnimalCard extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: <Widget>[
-                          _buildInfoBox('$sex'),
+                          _buildInfoBox(sex),
                           SizedBox(width: 5),
-                          _buildInfoBox('$status'),
+                          _buildInfoBox(status),
                           SizedBox(width: 5),
-                          _buildInfoBox('$animalType'),
+                          _buildInfoBox(animalType),
                         ],
                       ),
                     ),
