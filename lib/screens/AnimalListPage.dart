@@ -1,11 +1,45 @@
+import 'package:channab_frm/api/ApiService.dart';
 import 'package:flutter/material.dart';
 import '../widgets/animalCard.dart';
 import '../widgets/filter.dart';
 import 'animalDetailPage.dart';  // Import AnimalDetailPage
 
 class AnimalListPage extends StatelessWidget {
+  final ApiService _apiService = ApiService();
+  AnimalListPage({Key? key}) : super(key: key);
+
+  String calculateAge(String dob) {
+    DateTime birthDate = DateTime.parse(dob);
+    DateTime today = DateTime.now();
+    int years = today.year - birthDate.year;
+    int months = today.month - birthDate.month;
+    int days = today.day - birthDate.day;
+
+    if (months < 0 || (months == 0 && days < 0)) {
+      years--;
+      months += (days < 0 ? 11 : 12);
+    }
+
+    if (days < 0) {
+      final monthAgo = DateTime(today.year, today.month - 1, birthDate.day);
+      days = today.difference(monthAgo).inDays + 1;
+    }
+
+    return '${years} Year${years != 1 ? 's' : ''} ${months} Month${months != 1 ? 's' : ''} ${days} Day${days != 1 ? 's' : ''}';
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    final token = ModalRoute.of(context)!.settings.arguments as String?;
+    if (token != null) {
+      _apiService.authToken = token;
+      print("Received Token: $token"); // Add this line to print the token
+    } else {
+      // Handle the case when token is null
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Animals List'),
@@ -32,34 +66,37 @@ class AnimalListPage extends StatelessWidget {
             ),
           ),
 
+
           Expanded(
-            child: ListView.builder(
-              itemCount: 10,  // Number of items in the list
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AnimalDetailPage(
+            child: FutureBuilder<List<dynamic>>(
+              future: _apiService.fetchAnimals(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  print('Error fetching animals: ${snapshot.error}');
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      var animal = snapshot.data![index];
+                      return AnimalCard(
                         imageUrl: 'https://via.placeholder.com/150',
-                        title: 'Animal ${index + 1}',
-                        age: 'Age Placeholder',
-                        status: 'Status Placeholder',
-                        type: 'Type Placeholder',
-                        lactation: 'Lactation Placeholder',
-                        weight: 'Weight Placeholder',
-                      ),
-                    ),
-                  ),
-                  child: AnimalCard(
-                    imageUrl: 'https://via.placeholder.com/150',
-                    title: 'Animal ${index + 1}',
-                    age: '${index + 1} years',
-                  ),
-                );
+                        title: animal['tag'],
+                        age: calculateAge(animal['dob']),
+                        sex: animal['sex'],
+                        status: animal['status'],
+                        animalType: animal['animal_type'],
+                      );
+                    },
+                  );
+                }
               },
             ),
           ),
+
+
         ],
       ),
     );
@@ -90,4 +127,5 @@ Widget _buildTypeBox(String text, int index) {
     List<Color> colors = [Colors.red, Colors.green, Colors.blue, Colors.orange, Colors.purple, Colors.pink, Colors.yellow, Colors.teal, Colors.cyan, Colors.amber];
     return colors[index % colors.length];
   }
+
 }

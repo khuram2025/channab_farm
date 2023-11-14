@@ -1,4 +1,9 @@
+import 'package:channab_frm/api/ApiService.dart';
+import 'package:channab_frm/screens/AnimalListPage.dart';
+import 'package:channab_frm/screens/homePage.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 
 class LoginPage extends StatefulWidget {
@@ -9,6 +14,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final ApiService _apiService = ApiService();
+  String? _loginToken;
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +48,11 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // TODO: Implement login logic
-              },
+              onPressed: _handleLogin, // Call the _handleLogin method here
               child: Text('Login'),
             ),
+
+
             TextButton(
               onPressed: () {
                 // TODO: Navigate to Signup Screen
@@ -57,6 +64,34 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+  void _handleLogin() async {
+    try {
+      final response = await _apiService.login(
+        _phoneController.text,
+        _passwordController.text,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _apiService.authToken = data['token'];
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AnimalListPage(),
+            settings: RouteSettings(arguments: data['token']),
+          ),
+        );
+      } else {
+        print('Login failed: ${response.body}');
+      }
+    } on http.ClientException catch (e) {
+      // Handle XMLHttpRequest error
+      print('Login failed: $e');
+    } catch (e) {
+      print('Login failed: $e');
+    }
+  }
+
 
   @override
   void dispose() {

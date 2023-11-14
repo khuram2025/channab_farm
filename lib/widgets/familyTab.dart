@@ -45,11 +45,11 @@ class FamilyTab extends StatelessWidget {
             ),
           ],
         ),
-        AnimalCard(
-          imageUrl: imageUrl,
-          title: name,
-          age: age,
-        ),
+        // AnimalCard(
+        //   imageUrl: imageUrl,
+        //   title: name,
+        //   age: age,
+        // ),
         SizedBox(height: 20),
       ],
     );
@@ -70,13 +70,13 @@ class FamilyTab extends StatelessWidget {
           'Children',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        Column(
-          children: children.map((child) => AnimalCard(
-            imageUrl: child['imageUrl']!,
-            title: child['name']!,
-            age: child['age']!,
-          )).toList(),
-        ),
+        // Column(
+        //   children: children.map((child) => AnimalCard(
+        //     imageUrl: child['imageUrl']!,
+        //     title: child['name']!,
+        //     age: child['age']!,
+        //   )).toList(),
+        // ),
       ],
     );
   }

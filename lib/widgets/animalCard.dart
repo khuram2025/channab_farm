@@ -4,12 +4,18 @@ class AnimalCard extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String age;
+  final String sex;
+  final String status;
+  final String animalType;
 
   AnimalCard({
     Key? key,
     required this.imageUrl,
     required this.title,
     required this.age,
+    required this.sex,
+    required this.status,
+    required this.animalType,
   }) : super(key: key);
 
   @override
@@ -33,21 +39,17 @@ class AnimalCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ),
+                    Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text('Age: $age'),
-                    Text('Milking: Since last 10 days'),
-                    SingleChildScrollView( // Enables horizontal scrolling for the row
+                    SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: <Widget>[
-                          _buildInfoBox('Box 1'),
-                          SizedBox(width: 5), // Spacing between boxes
-                          _buildInfoBox('Box 2'),
+                          _buildInfoBox('$sex'),
                           SizedBox(width: 5),
-                          _buildInfoBox('Box 3'),
+                          _buildInfoBox('$status'),
+                          SizedBox(width: 5),
+                          _buildInfoBox('$animalType'),
                         ],
                       ),
                     ),
@@ -63,7 +65,7 @@ class AnimalCard extends StatelessWidget {
 
   Widget _buildInfoBox(String text) {
     return Container(
-      width: 70,
+      width: 100,
       height: 26,
       alignment: Alignment.center,
       decoration: BoxDecoration(

@@ -43,15 +43,7 @@ class HomeScreen extends StatelessWidget {
                   },
                   child: Text('Animal List'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  },
-                  child: Text('Login'),
-                ),
+
               ],
             ),
           ),
