@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AnimalCard extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
   final String title;
   final String age;
   final String sex;
@@ -10,7 +10,7 @@ class AnimalCard extends StatelessWidget {
 
   AnimalCard({
     Key? key,
-    required this.imageUrl,
+    this.imageUrl,
     required this.title,
     required this.age,
     required this.sex,
@@ -26,8 +26,15 @@ class AnimalCard extends StatelessWidget {
       child: Card(
         child: Row(
           children: [
-            Image.network(
-              imageUrl,
+            (imageUrl != null && imageUrl!.isNotEmpty)
+                ? Image.network(
+              imageUrl!,
+              width: 150,
+              height: 150,
+              fit: BoxFit.cover,
+            )
+                : Image.asset(
+              'assets/fallback_image.png', // Path to your fallback image asset
               width: 150,
               height: 150,
               fit: BoxFit.cover,

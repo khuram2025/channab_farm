@@ -25,9 +25,13 @@ class AnimalListPage extends StatelessWidget {
       days = today.difference(monthAgo).inDays + 1;
     }
 
-    return '${years} Year${years != 1 ? 's' : ''} ${months} Month${months != 1 ? 's' : ''} ${days} Day${days != 1 ? 's' : ''}';
-  }
+    List<String> ageParts = [];
+    if (years > 0) ageParts.add('${years} Year${years != 1 ? 's' : ''}');
+    if (months > 0) ageParts.add('${months} Month${months != 1 ? 's' : ''}');
+    if (days > 0) ageParts.add('${days} Day${days != 1 ? 's' : ''}');
 
+    return ageParts.join(' ');
+  }
 
 
   @override
