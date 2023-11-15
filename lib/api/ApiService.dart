@@ -53,5 +53,29 @@ class ApiService {
     }
   }
 
-// Any other API methods can be added here
+  Future<Map<String, dynamic>> fetchAnimalDetails(int animalId) async {
+    if (_authToken == null) {
+      throw Exception('Authentication token not found');
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/dairy/api/animals/$animalId/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Token $_authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        print('Server response: ${response.body}');
+        throw Exception('Failed to load animal details: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred while fetching animal details: $e');
+      throw Exception('Error occurred: $e');
+    }
+  }
 }

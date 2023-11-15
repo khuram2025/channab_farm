@@ -85,15 +85,28 @@ class AnimalListPage extends StatelessWidget {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       var animal = snapshot.data![index];
-                      return AnimalCard(
-                        imageUrl: animal['image_url'],
-                        serverDomain: 'http://farmapp.channab.com',
-                        title: animal['tag'],
-                        age: calculateAge(animal['dob']),
-                        sex: animal['sex'],
-                        latestWeight: animal['latest_weight'] != null ? animal['latest_weight'].toString() : null,
-                        status: animal['status'],
-                        animalType: animal['animal_type'],
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AnimalDetailPage(
+                                animalId: animal['id'],  // Pass the animal ID
+                                apiService: _apiService,
+                              ),
+                            ),
+                          );
+                        },
+                        child: AnimalCard(
+                          imageUrl: animal['image_url'],
+                          serverDomain: 'http://farmapp.channab.com',
+                          title: animal['tag'],
+                          age: calculateAge(animal['dob']),
+                          sex: animal['sex'],
+                          latestWeight: animal['latest_weight'] != null ? animal['latest_weight'].toString() : null,
+                          status: animal['status'],
+                          animalType: animal['animal_type'],
+                        ),
                       );
                     },
                   );
@@ -101,8 +114,6 @@ class AnimalListPage extends StatelessWidget {
               },
             ),
           ),
-
-
         ],
       ),
     );

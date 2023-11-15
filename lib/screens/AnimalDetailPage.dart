@@ -1,52 +1,72 @@
-import 'package:channab_frm/screens/AnimalUploadEditPage.dart';
+import 'package:flutter/material.dart';
+import 'package:channab_frm/api/ApiService.dart';
 import 'package:channab_frm/widgets/familyTab.dart';
 import 'package:channab_frm/widgets/milkingTab.dart';
-import 'package:flutter/material.dart';
 
-import '../widgets/wightTab.dart';
+import 'package:channab_frm/screens/AnimalUploadEditPage.dart';
 
 class AnimalDetailPage extends StatefulWidget {
-  final String imageUrl;
-  final String title;
-  final String age;
-  final String status;
-  final String type;
-  final String lactation;
-  final String weight;
+  final int animalId;
+  final ApiService apiService;
 
   AnimalDetailPage({
     Key? key,
-    required this.imageUrl,
-    required this.title,
-    required this.age,
-    required this.status,
-    required this.type,
-    required this.lactation,
-    required this.weight,
+    required this.animalId,
+    required this.apiService,
   }) : super(key: key);
-
 
   @override
   _AnimalDetailPageState createState() => _AnimalDetailPageState();
 }
 
 class _AnimalDetailPageState extends State<AnimalDetailPage> {
-  int _selectedIndex = 0; // To track the selected tab
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: widget.apiService.fetchAnimalDetails(widget.animalId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        } else if (snapshot.hasError) {
+          return Scaffold(body: Center(child: Text("Error: ${snapshot.error}")));
+        } else if (snapshot.hasData) {
+          var animalData = snapshot.data!;
+          return _buildAnimalDetailPage(context, animalData);
+        } else {
+          return Scaffold(body: Center(child: Text("No animal data found")));
+        }
+      },
+    );
+  }
+
+  Scaffold _buildAnimalDetailPage(BuildContext context, Map<String, dynamic> animalData) {
+    String imageUrl = animalData['image_url'] ?? 'assets/fallback_image.png'; // Provide a default or handle nulls
+    String title = animalData['tag'] ?? 'N/A';
+    String age = 'Calculate age from DOB'; // You need to calculate age from DOB
+    String status = animalData['status'] ?? 'N/A';
+    String type = animalData['animal_type'] ?? 'N/A';
+    String lactation = 'N/A'; // You need to handle lactation data
+    String weight = animalData['latest_weight']?.toString() ?? 'N/A';
+
     List<Widget> _tabWidgets = [
       _InfoWidget(
-        title: widget.title,
-        age: widget.age,
-        status: widget.status,
-        type: widget.type,
-        lactation: widget.lactation,
-        weight: widget.weight,
+        title: title,
+        age: age,
+        status: status,
+        type: type,
+        lactation: lactation,
+        weight: weight,
       ),
-      FamilyTab(),
-      WeightTab(),
-     MilkingTab(),
+      FamilyTab(), // You might need to adjust this tab based on actual data structure
+
+      MilkingTab(), // Same here
       Center(child: Text('Health')),
     ];
 
@@ -62,7 +82,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.title,
+                  title,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Row(
@@ -80,7 +100,6 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
                         );
                       },
                     ),
-
                   ],
                 ),
               ],
@@ -89,13 +108,13 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
           Container(
             constraints: BoxConstraints(maxWidth: 500),
             width: MediaQuery.of(context).size.width,
-            height: 250,  // Set the height to 300 pixels
-            child: Image.network(widget.imageUrl, fit: BoxFit.cover),
+            height: 250,
+            child: Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
+              return Image.asset('assets/fallback_image.png', fit: BoxFit.cover); // Fallback image
+            }),
           ),
-
-
           Container(
-            color: Colors.grey[300], // Background color for tabs
+            color: Colors.grey[300],
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -132,7 +151,6 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
   }
 }
 
-
 class _InfoWidget extends StatelessWidget {
   final String title, age, status, type, lactation, weight;
 
@@ -154,15 +172,15 @@ class _InfoWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildInfoRow('Title', title),
-            SizedBox(height: 8), // Added vertical space
+            SizedBox(height: 8),
             _buildInfoRow('Age', age),
-            SizedBox(height: 8), // Added vertical space
+            SizedBox(height: 8),
             _buildInfoRow('Status', status),
-            SizedBox(height: 8), // Added vertical space
+            SizedBox(height: 8),
             _buildInfoRow('Type', type),
-            SizedBox(height: 8), // Added vertical space
+            SizedBox(height: 8),
             _buildInfoRow('Lactation', lactation),
-            SizedBox(height: 8), // Added vertical space
+            SizedBox(height: 8),
             _buildInfoRow('Weight', weight),
           ],
         ),
@@ -172,7 +190,7 @@ class _InfoWidget extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.0), // Increased vertical padding
+      padding: EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
           Expanded(
@@ -181,8 +199,8 @@ class _InfoWidget extends StatelessWidget {
               label,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[700], // Adjusted label color
-                fontSize: 16, // Adjusted font size
+                color: Colors.grey[700],
+                fontSize: 16,
               ),
             ),
           ),
@@ -191,8 +209,8 @@ class _InfoWidget extends StatelessWidget {
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 16, // Adjusted value font size
-                color: Colors.black87, // Adjusted value color
+                fontSize: 16,
+                color: Colors.black87,
               ),
             ),
           ),
