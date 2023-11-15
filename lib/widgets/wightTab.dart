@@ -1,55 +1,59 @@
 import 'package:flutter/material.dart';
 
-
 class WeightTab extends StatelessWidget {
+  final List<Map<String, dynamic>> weightData;
+
+  WeightTab({Key? key, required this.weightData}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    // Dummy data for 5 weight entries
-    List<Map<String, String>> weightEntries = List.generate(5, (index) => {
-      'date': '2023-03-${index + 10}',
-      'currentWeight': '${150 + index} kg',
-      'lastWeight': '${145 + index} kg',
-      'difference': '${5 + index} kg',
-      'percentageChange': '${3.4 + index}%',
-      'perDayGain': '${0.2 + index * 0.1} kg',
-    });
-
+    double lastWeight = 0;
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+      scrollDirection: Axis.horizontal,
       child: DataTable(
-        columnSpacing: 12, // Reduced space between columns
+        columnSpacing: 10,
         columns: [
           DataColumn(label: Text('Date')),
-          DataColumn(label: Text('Current\nWeight')), // Two lines for heading
-          DataColumn(label: Text('Last\nWeight')), // Two lines for heading
-          DataColumn(label: Text('Difference')),
-          DataColumn(label: Text('Change %')),
-          DataColumn(label: Text('Per Day\nGain')), // Two lines for heading
+          DataColumn(label: Text('Weight')),
+          DataColumn(label: Text('Diff')),
+          DataColumn(label: Text('Change%')),
           DataColumn(label: Text('Action')),
         ],
-        rows: weightEntries.map((entry) => DataRow(
-          cells: [
-            DataCell(Text(entry['date']!)),
-            DataCell(Text(entry['currentWeight']!)),
-            DataCell(Text(entry['lastWeight']!)),
-            DataCell(Text(entry['difference']!)),
-            DataCell(Text(entry['percentageChange']!)),
-            DataCell(Text(entry['perDayGain']!)),
-            DataCell(Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {/* Edit logic */},
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {/* Delete logic */},
-                ),
-              ],
-            )),
-          ],
-        )).toList(),
+        rows: weightData.map((entry) {
+          double currentWeight = double.tryParse(entry['weight_kg']?.toString() ?? '0') ?? 0;
+          double weightDiff = currentWeight - lastWeight;
+          double percentageChange = lastWeight != 0 ? (weightDiff / lastWeight * 100) : 0;
+          lastWeight = currentWeight; // Update for next iteration
+
+          return DataRow(
+            cells: [
+              DataCell(Text(entry['date'] ?? 'N/A')),
+              DataCell(Text('${entry['weight_kg']} kg')),
+              DataCell(Text(
+                weightDiff.toStringAsFixed(2),
+                style: TextStyle(color: weightDiff >= 0 ? Colors.green : Colors.red),
+              )),
+              DataCell(Text(
+                '${percentageChange.toStringAsFixed(2)}%',
+                style: TextStyle(color: percentageChange >= 0 ? Colors.green : Colors.red),
+              )),
+              DataCell(Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit, size: 20, color: Colors.blue),
+                    onPressed: () {/* Edit logic */},
+                  ),
+                  // Reduced space between icons
+                  IconButton(
+                    icon: Icon(Icons.delete, size: 20, color: Colors.red),
+                    onPressed: () {/* Delete logic */},
+                  ),
+                ],
+              )),
+            ],
+          );
+        }).toList(),
       ),
     );
   }

@@ -12,51 +12,68 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+// ... Existing imports ...
 
-// ... [previous code] ...
+class AnimalDetailPage extends StatefulWidget {
+  final int animalId;
+  final ApiService apiService;
 
-Expanded(
-child: FutureBuilder<List<dynamic>>(
-future: _apiService.fetchAnimals(),
-builder: (context, snapshot) {
-if (snapshot.connectionState == ConnectionState.waiting) {
-return CircularProgressIndicator();
-} else if (snapshot.hasError) {
-print('Error fetching animals: ${snapshot.error}');
-return Text('Error: ${snapshot.error}');
-} else {
-return ListView.builder(
-itemCount: snapshot.data!.length,
-itemBuilder: (context, index) {
-var animal = snapshot.data![index];
-return GestureDetector(
-onTap: () {
-Navigator.push(
-context,
-MaterialPageRoute(
-builder: (context) => AnimalDetailPage(
-animalId: animal['id'],  // Pass the animal ID
-apiService: _apiService,
-),
-),
-);
-},
-child: AnimalCard(
-imageUrl: animal['image_url'],
-serverDomain: 'http://farmapp.channab.com',
-title: animal['tag'],
-age: calculateAge(animal['dob']),
-sex: animal['sex'],
-latestWeight: animal['latest_weight'] != null ? animal['latest_weight'].toString() : null,
-status: animal['status'],
-animalType: animal['animal_type'],
-),
-);
-},
-);
+  AnimalDetailPage({
+    Key? key,
+    required this.animalId,
+    required this.apiService,
+  }) : super(key: key);
+
+  @override
+  _AnimalDetailPageState createState() => _AnimalDetailPageState();
 }
-},
-),
-),
 
-// ... [rest of the code] ...
+class _AnimalDetailPageState extends State<AnimalDetailPage> {
+  int _selectedIndex = 0;
+  late List<Map<String, dynamic>> weightData; // Declare variable to store weight data
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: widget.apiService.fetchAnimalDetails(widget.animalId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        } else if (snapshot.hasError) {
+          return Scaffold(body: Center(child: Text("Error: ${snapshot.error}")));
+        } else if (snapshot.hasData) {
+          var animalData = snapshot.data!;
+          weightData = animalData['weights']?.map<Map<String, dynamic>>((item) => {
+            'date': item['date'],
+            'weight_kg': item['weight_kg'],
+            'description': item['description'],
+          }).toList() ?? [];
+          return _buildAnimalDetailPage(context, animalData);
+        } else {
+          return Scaffold(body: Center(child: Text("No animal data found")));
+        }
+      },
+    );
+  }
+
+  // ... Other methods ...
+
+  Scaffold _buildAnimalDetailPage(BuildContext context, Map<String, dynamic> animalData) {
+    // ... Existing code ...
+
+    List<Widget> _tabWidgets = [
+      // ... Other tabs ...
+      WeightTab(weightData: weightData), // Pass weight data to WeightTab
+      // ... Other tabs ...
+    ];
+
+    // ... Remaining code ...
+  }
+
+// ... Remaining code ...
+}

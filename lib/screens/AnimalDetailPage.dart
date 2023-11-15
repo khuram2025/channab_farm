@@ -5,6 +5,8 @@ import 'package:channab_frm/widgets/milkingTab.dart';
 
 import 'package:channab_frm/screens/AnimalUploadEditPage.dart';
 
+import '../widgets/wightTab.dart';
+
 class AnimalDetailPage extends StatefulWidget {
   final int animalId;
   final ApiService apiService;
@@ -21,6 +23,7 @@ class AnimalDetailPage extends StatefulWidget {
 
 class _AnimalDetailPageState extends State<AnimalDetailPage> {
   int _selectedIndex = 0;
+  late List<Map<String, dynamic>> weightData;
 
   @override
   void initState() {
@@ -38,6 +41,11 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
           return Scaffold(body: Center(child: Text("Error: ${snapshot.error}")));
         } else if (snapshot.hasData) {
           var animalData = snapshot.data!;
+          weightData = animalData['weights']?.map<Map<String, dynamic>>((item) => {
+            'date': item['date'],
+            'weight_kg': item['weight_kg'],
+            'description': item['description'],
+          }).toList() ?? [];
           return _buildAnimalDetailPage(context, animalData);
         } else {
           return Scaffold(body: Center(child: Text("No animal data found")));
@@ -65,10 +73,12 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
         weight: weight,
       ),
       FamilyTab(), // You might need to adjust this tab based on actual data structure
-
+      WeightTab(weightData: weightData),
       MilkingTab(), // Same here
       Center(child: Text('Health')),
     ];
+    String baseUrl = 'http://farmapp.channab.com'; // Your API base URL
+    String fullimageUrl = baseUrl + (animalData['image'] ?? '/assets/fallback_image.png'); // Concatenate base URL with image path
 
     return Scaffold(
       appBar: AppBar(
@@ -109,9 +119,9 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
             constraints: BoxConstraints(maxWidth: 500),
             width: MediaQuery.of(context).size.width,
             height: 250,
-            child: Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
-              return Image.asset('assets/fallback_image.png', fit: BoxFit.cover); // Fallback image
-            }),
+          child: Image.network(fullimageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
+            return Image.asset('assets/fallback_image.png', fit: BoxFit.cover); // Fallback image
+        }),
           ),
           Container(
             color: Colors.grey[300],
