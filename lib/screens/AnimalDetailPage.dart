@@ -24,6 +24,7 @@ class AnimalDetailPage extends StatefulWidget {
 class _AnimalDetailPageState extends State<AnimalDetailPage> {
   int _selectedIndex = 0;
   late List<Map<String, dynamic>> weightData;
+  late List<dynamic> milkRecords;
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
             'weight_kg': item['weight_kg'],
             'description': item['description'],
           }).toList() ?? [];
+          milkRecords = animalData['milk_records'] ?? [];
           return _buildAnimalDetailPage(context, animalData);
         } else {
           return Scaffold(body: Center(child: Text("No animal data found")));
@@ -74,7 +76,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
       ),
       FamilyTab(), // You might need to adjust this tab based on actual data structure
       WeightTab(weightData: weightData),
-      MilkingTab(), // Same here
+      MilkingTab(milkRecords: milkRecords),
       Center(child: Text('Health')),
     ];
     String baseUrl = 'http://farmapp.channab.com'; // Your API base URL
@@ -136,7 +138,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
             ),
           ),
           Expanded(
-            child: _tabWidgets[_selectedIndex],
+              child: _buildTabContent(),
           ),
         ],
       ),
@@ -158,6 +160,22 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
         ),
       ),
     );
+  }
+  Widget _buildTabContent() {
+    switch (_selectedIndex) {
+      case 0:
+        return _InfoWidget(title: '', status: '', age: '', type: '', lactation: '', weight: '',/* ... */);
+      case 1:
+        return FamilyTab(/* ... */);
+      case 2:
+        return WeightTab(weightData: weightData);
+      case 3:
+        return MilkingTab(milkRecords: milkRecords);
+      case 4:
+        return Center(child: Text('Health'));
+      default:
+        return Center(child: Text('No content available'));
+    }
   }
 }
 

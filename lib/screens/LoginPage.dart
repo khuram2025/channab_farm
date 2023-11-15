@@ -12,8 +12,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  // TODO: Remove these default values after testing
+  final TextEditingController _phoneController = TextEditingController(text: '+966590964893'); // Prefilled username for testing
+  final TextEditingController _passwordController = TextEditingController(text: 'Read@123'); // Prefilled password for testing
   final ApiService _apiService = ApiService();
   String? _loginToken;
 

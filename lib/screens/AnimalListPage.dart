@@ -65,7 +65,7 @@ class AnimalListPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 8),
-                FilterIconWidget(),
+
               ],
             ),
           ),

@@ -2,28 +2,25 @@ import 'package:channab_frm/widgets/filter.dart';
 import 'package:flutter/material.dart';
 
 class MilkingTab extends StatelessWidget {
+  final List<dynamic> milkRecords;
+
+  MilkingTab({Key? key, required this.milkRecords}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    // Assuming you have a list of milking entries
-    // Replace with actual data
-    List<Map<String, dynamic>> milkingEntries = List.generate(30, (index) {
-      int first = 10 + index;
-      int second = 8 + index;
-      int third = 6 + index;
-      int total = first + second + third;
-      return {
-        'date': '2023-03-${index + 1}',
-        'first': '$first L',
-        'second': '$second L',
-        'third': '$third L',
-        'total': '$total L',
-      };
+    var totalFirst = 0.0;
+    var totalSecond = 0.0;
+    var totalThird = 0.0;
+    var totalMilk = 0.0;
+    milkRecords.forEach((record) {
+      totalFirst += double.parse(record['first_time'] ?? '0');
+      totalSecond += double.parse(record['second_time'] ?? '0');
+      totalThird += double.parse(record['third_time'] ?? '0');
+      // ... Rest of your code
     });
 
-    int totalFirst = milkingEntries.fold(0, (sum, item) => sum + int.parse(item['first'].split(' ')[0]));
-    int totalSecond = milkingEntries.fold(0, (sum, item) => sum + int.parse(item['second'].split(' ')[0]));
-    int totalThird = milkingEntries.fold(0, (sum, item) => sum + int.parse(item['third'].split(' ')[0]));
-    int grandTotal = totalFirst + totalSecond + totalThird;
+
+    double grandTotal = totalFirst + totalSecond + totalThird;
 
     return Column(
       children: [
@@ -33,28 +30,42 @@ class MilkingTab extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildAddMilkButton(),
-              FilterIconWidget(), // Your existing FilterIconWidget
+            // In your MilkingTab or any other appropriate place
+              IconButton(
+                icon: Icon(Icons.filter_list),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => FilterOptionsWidget(),
+                  );
+                },
+              ),
             ],
           ),
         ),
         _buildTableHeadings(),
         Expanded(
           child: ListView.builder(
-            itemCount: milkingEntries.length,
+            itemCount: milkRecords.length,
             itemBuilder: (context, index) {
-              var entry = milkingEntries[index];
+              var record = milkRecords[index];
+              double computedTotalMilk = (double.parse(record['first_time'] ?? '0') +
+                  double.parse(record['second_time'] ?? '0') +
+                  double.parse(record['third_time'] ?? '0'));
+
+
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                // existing Card layout...
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(entry['date']!),
-                      Text(entry['first']!),
-                      Text(entry['second']!),
-                      Text(entry['third']!),
-                      Text(entry['total']!),
+                      Text(record['date']),
+                      Text('${record['first_time']} L'),
+                      Text('${record['second_time']} L'),
+                      Text('${record['third_time']} L'),
+                      Text('${record['computed_total_milk']} L'),
                     ],
                   ),
                 ),
@@ -70,10 +81,10 @@ class MilkingTab extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Total:'),
-                Text('${totalFirst} L'), // Total for first
-                Text('${totalSecond} L'), // Total for second
-                Text('${totalThird} L'), // Total for third
-                Text('${grandTotal} L'), // Grand total
+                Text('${totalFirst.toStringAsFixed(1)} L'), // Total for first
+                Text('${totalSecond.toStringAsFixed(1)} L'), // Total for second
+                Text('${totalThird.toStringAsFixed(1)} L'), // Total for third
+                Text('${grandTotal.toStringAsFixed(1)} L'), // Grand total
                 // You can add total calculations here
               ],
             ),
