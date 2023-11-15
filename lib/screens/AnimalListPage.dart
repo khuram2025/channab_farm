@@ -87,9 +87,11 @@ class AnimalListPage extends StatelessWidget {
                       var animal = snapshot.data![index];
                       return AnimalCard(
                         imageUrl: animal['image_url'],
+                        serverDomain: 'http://farmapp.channab.com',
                         title: animal['tag'],
                         age: calculateAge(animal['dob']),
                         sex: animal['sex'],
+                        latestWeight: animal['latest_weight'] != null ? animal['latest_weight'].toString() : null,
                         status: animal['status'],
                         animalType: animal['animal_type'],
                       );

@@ -6,7 +6,10 @@ class AnimalCard extends StatelessWidget {
   final String age;
   final String sex;
   final String status;
+  final String? latestWeight;
   final String animalType;
+  final String serverDomain;
+
 
   AnimalCard({
     Key? key,
@@ -16,11 +19,15 @@ class AnimalCard extends StatelessWidget {
     required this.sex,
     required this.status,
     required this.animalType,
+    this.latestWeight,
+    required this.serverDomain,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String fullImageUrl = imageUrl != null ? 'http://example.com$imageUrl' : 'assets/fallback_image.png';
+    String fullImageUrl = imageUrl != null && imageUrl!.isNotEmpty
+        ? '$serverDomain$imageUrl'
+        : 'assets/fallback_image.png';
 
     return Container(
       width: 400,
@@ -42,25 +49,52 @@ class AnimalCard extends StatelessWidget {
                 );
               },
             ),
-            Expanded(  // Wrap with Expanded to prevent overflow
+
+            Expanded(
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0), // Add vertical padding
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        ),
+                        InkWell(
+                          onTap: () {
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(4.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xFF00B375)),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text('Edit', style: TextStyle(color: Color(0xFF00B375))),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 5), // Spacing after title
                     Text('Age: $age'),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: <Widget>[
-                          _buildInfoBox(sex),
-                          SizedBox(width: 5),
-                          _buildInfoBox(status),
-                          SizedBox(width: 5),
-                          _buildInfoBox(animalType),
-                        ],
+                    SizedBox(height: 5),
+                    if (latestWeight != null) Text('Weight: $latestWeight kg'),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomLeft,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: <Widget>[
+                              _buildInfoBox(sex),
+                              SizedBox(width: 5),
+                              _buildInfoBox(status),
+                              SizedBox(width: 5),
+                              _buildInfoBox(animalType),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -75,17 +109,20 @@ class AnimalCard extends StatelessWidget {
 
   Widget _buildInfoBox(String text) {
     return Container(
-      width: 100,
+
       height: 26,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         border: Border.all(color: Color(0xFF00B375)),
         borderRadius: BorderRadius.circular(5),
       ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: Color(0xFF00B375),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: Color(0xFF00B375),
+          ),
         ),
       ),
     );
