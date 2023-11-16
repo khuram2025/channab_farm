@@ -50,16 +50,19 @@ class _MilkingTabState extends State<MilkingTab> {
     var totalFirst = 0.0;
     var totalSecond = 0.0;
     var totalThird = 0.0;
-    var totalMilk = 0.0;
-    widget.milkRecords.forEach((record) {
+
+    // Use filteredMilkRecords for total calculation
+    for (var record in filteredMilkRecords) {
       totalFirst += double.parse(record['first_time'] ?? '0');
       totalSecond += double.parse(record['second_time'] ?? '0');
       totalThird += double.parse(record['third_time'] ?? '0');
-      // ... Rest of your code
-    });
-
+    }
 
     double grandTotal = totalFirst + totalSecond + totalThird;
+
+
+
+
 
     return Column(
       children: [
@@ -86,10 +89,9 @@ class _MilkingTabState extends State<MilkingTab> {
         _buildTableHeadings(),
         Expanded(
           child: ListView.builder(
-            itemCount: widget.milkRecords.length,
+            itemCount: filteredMilkRecords.length, // Use filteredMilkRecords here
             itemBuilder: (context, index) {
-
-              var record = widget.milkRecords[index];
+              var record = filteredMilkRecords[index]; // Use filteredMilkRecords here
               double firstTime = double.parse(record['first_time'] ?? '0');
               double secondTime = double.parse(record['second_time'] ?? '0');
               double thirdTime = double.parse(record['third_time'] ?? '0');
