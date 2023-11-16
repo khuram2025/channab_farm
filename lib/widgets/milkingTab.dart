@@ -48,10 +48,17 @@ class MilkingTab extends StatelessWidget {
           child: ListView.builder(
             itemCount: milkRecords.length,
             itemBuilder: (context, index) {
+
               var record = milkRecords[index];
-              double computedTotalMilk = (double.parse(record['first_time'] ?? '0') +
-                  double.parse(record['second_time'] ?? '0') +
-                  double.parse(record['third_time'] ?? '0'));
+              double firstTime = double.parse(record['first_time'] ?? '0');
+              double secondTime = double.parse(record['second_time'] ?? '0');
+              double thirdTime = double.parse(record['third_time'] ?? '0');
+              double totalMilk = firstTime + secondTime + thirdTime;
+
+              // Accumulate totals
+              totalFirst += firstTime;
+              totalSecond += secondTime;
+              totalThird += thirdTime;
 
 
               return Card(
@@ -62,10 +69,10 @@ class MilkingTab extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(record['date']),
-                      Text('${record['first_time']} L'),
-                      Text('${record['second_time']} L'),
-                      Text('${record['third_time']} L'),
-                      Text('${record['computed_total_milk']} L'),
+                      Text('${firstTime.toStringAsFixed(1)} L'),
+                      Text('${secondTime.toStringAsFixed(1)} L'),
+                      Text('${thirdTime.toStringAsFixed(1)} L'),
+                      Text('${totalMilk.toStringAsFixed(1)} L'),
                     ],
                   ),
                 ),
@@ -84,7 +91,7 @@ class MilkingTab extends StatelessWidget {
                 Text('${totalFirst.toStringAsFixed(1)} L'), // Total for first
                 Text('${totalSecond.toStringAsFixed(1)} L'), // Total for second
                 Text('${totalThird.toStringAsFixed(1)} L'), // Total for third
-                Text('${grandTotal.toStringAsFixed(1)} L'), // Grand total
+                Text('${(totalFirst + totalSecond + totalThird).toStringAsFixed(1)} L'),// Grand total
                 // You can add total calculations here
               ],
             ),
