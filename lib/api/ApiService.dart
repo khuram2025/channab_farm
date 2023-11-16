@@ -78,4 +78,29 @@ class ApiService {
       throw Exception('Error occurred: $e');
     }
   }
+  Future<Map<String, dynamic>> fetchMilkRecords(int animalId, String timeFilter) async {
+    if (_authToken == null) {
+      throw Exception('Authentication token not found');
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/dairy/api/animals/$animalId/?time_filter=$timeFilter'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Token $_authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        print('Server response: ${response.body}');
+        throw Exception('Failed to load milk records: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred while fetching milk records: $e');
+      throw Exception('Error occurred: $e');
+    }
+  }
 }

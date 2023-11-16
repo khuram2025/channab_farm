@@ -76,7 +76,8 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
       ),
       FamilyTab(), // You might need to adjust this tab based on actual data structure
       WeightTab(weightData: weightData),
-      MilkingTab(milkRecords: milkRecords),
+      MilkingTab(milkRecords: milkRecords, animalId: widget.animalId, apiService: widget.apiService,),
+
       Center(child: Text('Health')),
     ];
     String baseUrl = 'http://farmapp.channab.com'; // Your API base URL
@@ -170,8 +171,13 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
       case 2:
         return WeightTab(weightData: weightData);
       case 3:
-        return MilkingTab(milkRecords: milkRecords);
-      case 4:
+        return MilkingTab(
+          milkRecords: milkRecords,
+          animalId: widget.animalId,
+          apiService: widget.apiService,
+        );
+
+    case 4:
         return Center(child: Text('Health'));
       default:
         return Center(child: Text('No content available'));

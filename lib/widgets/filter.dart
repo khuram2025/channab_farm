@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class FilterOptionsWidget extends StatefulWidget {
+  final Function(String) onFilterSelected;
+
+  FilterOptionsWidget({Key? key, required this.onFilterSelected}) : super(key: key);
+
   @override
   _FilterOptionsWidgetState createState() => _FilterOptionsWidgetState();
 }
@@ -68,9 +72,10 @@ class _FilterOptionsWidgetState extends State<FilterOptionsWidget> {
   }
 
   void _applyFilter(String filter) {
+    print("Selected filter: $filter"); // Print to console
+    widget.onFilterSelected(filter); // Call the callback with the selected filter
     setState(() {
       currentFilter = filter;
-      // TODO: Implement the logic to apply the selected filter
     });
     Navigator.of(context).pop();
   }

@@ -1,10 +1,49 @@
 import 'package:channab_frm/widgets/filter.dart';
 import 'package:flutter/material.dart';
 
-class MilkingTab extends StatelessWidget {
-  final List<dynamic> milkRecords;
+import '../api/ApiService.dart';
 
-  MilkingTab({Key? key, required this.milkRecords}) : super(key: key);
+class MilkingTab extends StatefulWidget {
+  final List<dynamic> milkRecords;
+  final int animalId;
+  final ApiService apiService;
+
+
+  MilkingTab({Key? key, required this.milkRecords, required this.animalId, required this.apiService}) : super(key: key);
+
+  @override
+  State<MilkingTab> createState() => _MilkingTabState();
+}
+
+class _MilkingTabState extends State<MilkingTab> {
+  String currentFilter = 'this_month';
+  List<dynamic> filteredMilkRecords = [];
+
+  @override
+  void initState() {
+    super.initState();
+    filteredMilkRecords = widget.milkRecords; // Initialize with all records
+  }
+
+  void _fetchMilkRecords(String filter) async {
+    try {
+      var data = await widget.apiService.fetchMilkRecords(widget.animalId, filter);
+      setState(() {
+        filteredMilkRecords = data['milk_records'];
+      });
+    } catch (e) {
+      print('Error fetching milk records with filter $filter: $e');
+    }
+  }
+
+  void _onFilterSelected(String filter) {
+    print("Filter changed to: $filter"); // Print to console
+    setState(() {
+      currentFilter = filter;
+    });
+    _fetchMilkRecords(filter); // Fetch new milk records with the selected filter
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +51,7 @@ class MilkingTab extends StatelessWidget {
     var totalSecond = 0.0;
     var totalThird = 0.0;
     var totalMilk = 0.0;
-    milkRecords.forEach((record) {
+    widget.milkRecords.forEach((record) {
       totalFirst += double.parse(record['first_time'] ?? '0');
       totalSecond += double.parse(record['second_time'] ?? '0');
       totalThird += double.parse(record['third_time'] ?? '0');
@@ -36,20 +75,21 @@ class MilkingTab extends StatelessWidget {
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
-                    builder: (context) => FilterOptionsWidget(),
+                    builder: (context) => FilterOptionsWidget(onFilterSelected: _onFilterSelected),
                   );
                 },
               ),
+
             ],
           ),
         ),
         _buildTableHeadings(),
         Expanded(
           child: ListView.builder(
-            itemCount: milkRecords.length,
+            itemCount: widget.milkRecords.length,
             itemBuilder: (context, index) {
 
-              var record = milkRecords[index];
+              var record = widget.milkRecords[index];
               double firstTime = double.parse(record['first_time'] ?? '0');
               double secondTime = double.parse(record['second_time'] ?? '0');
               double thirdTime = double.parse(record['third_time'] ?? '0');
