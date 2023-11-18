@@ -83,13 +83,7 @@ class _MilkingTabState extends State<MilkingTab> {
       totalSecond += double.parse(record['second_time'] ?? '0');
       totalThird += double.parse(record['third_time'] ?? '0');
     }
-
     double grandTotal = totalFirst + totalSecond + totalThird;
-
-
-
-
-
     return Column(
       children: [
         Padding(
