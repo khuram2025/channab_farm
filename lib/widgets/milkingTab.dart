@@ -18,6 +18,7 @@ class MilkingTab extends StatefulWidget {
 class _MilkingTabState extends State<MilkingTab> {
   String currentFilter = 'this_month';
   List<dynamic> filteredMilkRecords = [];
+  double averageMilkPerDay = 0.0;
 
   @override
   void initState() {
@@ -25,16 +26,21 @@ class _MilkingTabState extends State<MilkingTab> {
     filteredMilkRecords = widget.milkRecords; // Initialize with all records
   }
 
+  // Inside MilkingTab class, after fetching milk records
   void _fetchMilkRecords(String filter) async {
     try {
       var data = await widget.apiService.fetchMilkRecords(widget.animalId, filter);
       setState(() {
         filteredMilkRecords = data['milk_records'];
+        // Assuming the backend sends 'average_milk_per_day' in the response
+        averageMilkPerDay = data['average_milk_per_day'] ?? 0.0; // Updated line
+        print("Average Milk Per Day: $averageMilkPerDay liters"); // Or display it in UI
       });
     } catch (e) {
       print('Error fetching milk records with filter $filter: $e');
     }
   }
+
 
   void _onFilterSelected(String filter) {
     print("Filter changed to: $filter"); // Print to console
@@ -62,11 +68,14 @@ class _MilkingTabState extends State<MilkingTab> {
       var data = await widget.apiService.fetchMilkRecordsWithCustomRange(widget.animalId, startDate, endDate);
       setState(() {
         filteredMilkRecords = data['milk_records'];
+        averageMilkPerDay = data['average_milk_per_day'] ?? 0.0; // Updated line
+        print("Average Milk Per Day: $averageMilkPerDay liters"); // Display in UI
       });
     } catch (e) {
       print('Error fetching milk records with custom date range: $e');
     }
   }
+
 
 
 
@@ -149,7 +158,7 @@ class _MilkingTabState extends State<MilkingTab> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total:'),
+                Text('Total: Avg: ${averageMilkPerDay.toStringAsFixed(2)} L'),
                 Text('${totalFirst.toStringAsFixed(1)} L'), // Total for first
                 Text('${totalSecond.toStringAsFixed(1)} L'), // Total for second
                 Text('${totalThird.toStringAsFixed(1)} L'), // Total for third
