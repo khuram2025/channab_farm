@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FilterOptionsWidget extends StatefulWidget {
   final Function(String) onFilterSelected;
@@ -92,9 +93,16 @@ class _FilterOptionsWidgetState extends State<FilterOptionsWidget> {
     if (picked != null && picked != selectedDateRange) {
       setState(() {
         selectedDateRange = picked;
-        currentFilter = '${picked.start.toString().split(' ')[0]} - ${picked.end.toString().split(' ')[0]}';
-        // TODO: Apply the custom date range filter
+        currentFilter = 'custom'; // Indicate that a custom filter is selected
       });
+
+      // Format the start and end dates
+      String formattedStartDate = DateFormat('yyyy-MM-dd').format(picked.start);
+      String formattedEndDate = DateFormat('yyyy-MM-dd').format(picked.end);
+      String customFilterValue = '$formattedStartDate~$formattedEndDate';
+
+      widget.onFilterSelected(customFilterValue); // Send the custom date range
     }
   }
+
 }

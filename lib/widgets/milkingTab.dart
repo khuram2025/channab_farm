@@ -38,11 +38,37 @@ class _MilkingTabState extends State<MilkingTab> {
 
   void _onFilterSelected(String filter) {
     print("Filter changed to: $filter"); // Print to console
-    setState(() {
-      currentFilter = filter;
-    });
-    _fetchMilkRecords(filter); // Fetch new milk records with the selected filter
+
+    // Check if the filter is a custom range
+    if (filter.contains('~')) {
+      List<String> dates = filter.split('~');
+      String startDate = dates[0];
+      String endDate = dates[1];
+
+      // Call a method to fetch milk records with the custom date range
+      _fetchMilkRecordsWithCustomRange(startDate, endDate);
+    } else {
+      // Existing logic for predefined filters
+      setState(() {
+        currentFilter = filter;
+      });
+      _fetchMilkRecords(filter); // Fetch new milk records with the selected filter
+    }
   }
+
+// Implement a method to handle custom date range
+  void _fetchMilkRecordsWithCustomRange(String startDate, String endDate) async {
+    try {
+      var data = await widget.apiService.fetchMilkRecordsWithCustomRange(widget.animalId, startDate, endDate);
+      setState(() {
+        filteredMilkRecords = data['milk_records'];
+      });
+    } catch (e) {
+      print('Error fetching milk records with custom date range: $e');
+    }
+  }
+
+
 
 
   @override
